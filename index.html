@@ -3,33 +3,45 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>Puppy and Annoying Fly — Rive Demo</title>
+  <title>Spring Guy — Rive Demo</title>
   <style>
     :root { color-scheme: dark; font-family: ui-sans-serif, system-ui, sans-serif; }
     * { box-sizing: border-box; }
-    body { margin: 0; min-height: 100svh; display: grid; place-items: center; background: #121212; color: #f7f7f2; }
-    main { width: min(100%, 960px); padding: 20px; }
-    .stage { position: relative; width: 100%; aspect-ratio: 16 / 10; overflow: hidden; border-radius: 24px; background: #ece6d9; box-shadow: 0 20px 70px #0008; }
-    canvas { display: block; width: 100%; height: 100%; touch-action: none; cursor: grab; }
+    html, body { width: 100%; height: 100%; margin: 0; overflow: hidden; }
+    body { background: #121212; }
+    canvas {
+      display: block;
+      width: 100vw;
+      height: 100svh;
+      touch-action: none;
+      cursor: grab;
+    }
     canvas:active { cursor: grabbing; }
-    .status { margin: 12px 4px 0; color: #aaa; font-size: 13px; }
-    .status[data-state="ok"] { color: #87d99b; }
-    .status[data-state="error"] { color: #ff8f8f; }
+    #status {
+      position: fixed;
+      left: 16px;
+      bottom: 16px;
+      z-index: 1;
+      margin: 0;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: #0009;
+      color: #ddd;
+      font-size: 13px;
+      pointer-events: none;
+      backdrop-filter: blur(8px);
+    }
+    #status[data-state="ok"] { color: #9ce6aa; }
+    #status[data-state="error"] { color: #ff9b9b; }
   </style>
 </head>
 <body>
-  <main>
-    <div class="stage">
-      <canvas id="rive-canvas" aria-label="Interactive puppy and fly animation"></canvas>
-    </div>
-    <p id="status" class="status">正在載入互動作品…</p>
-  </main>
+  <canvas id="rive-canvas" aria-label="Interactive Spring Guy animation"></canvas>
+  <p id="status">正在載入互動作品…</p>
 
-  <!-- Rive Web Canvas runtime. No build step is needed for GitHub Pages. -->
-  <script src="https://unpkg.com/@rive-app/canvas"></script>
+  <script src="https://unpkg.com/@rive-app/webgl2"></script>
   <script>
-    const FILE = './puppy_and_annoying_fly.riv';
-    const ARTBOARD = 'Doggie follow';
+    const FILE = './springguy.riv';
     const STATE_MACHINE = 'State Machine 1';
 
     const canvas = document.querySelector('#rive-canvas');
@@ -49,36 +61,35 @@
       riveInstance = new rive.Rive({
         src: FILE,
         canvas,
-        artboard: ARTBOARD,
         stateMachines: STATE_MACHINE,
         autoplay: true,
         autoBind: true,
         isTouchScrollEnabled: false,
         dispatchPointerExit: true,
         layout: new rive.Layout({
-          fit: rive.Fit.Cover,
+          fit: rive.Fit.Contain,
           alignment: rive.Alignment.Center,
         }),
         onLoad: () => {
           resize();
           riveInstance.setupRiveListeners({ isTouchScrollEnabled: false });
-          setStatus('互動已就緒：移動、按下並拖曳滑鼠（觸控裝置可直接拖曳）。', 'ok');
+          setStatus('互動已就緒：移動、按下並拖曳。', 'ok');
         },
         onLoadError: (error) => {
           console.error('Rive load error:', error);
-          setStatus('載入失敗。請確認網頁是由伺服器開啟，且 .riv 檔與 index.html 位於同一層。', 'error');
+          setStatus('載入失敗，請確認 .riv 與 index.html 位於同一資料夾。', 'error');
         },
       });
 
       const observer = new ResizeObserver(resize);
-      observer.observe(canvas.parentElement);
+      observer.observe(canvas);
       window.addEventListener('beforeunload', () => {
         observer.disconnect();
         riveInstance?.cleanup();
       });
     } catch (error) {
       console.error(error);
-      setStatus('Rive Web runtime 無法啟動，請檢查網路連線後重新整理。', 'error');
+      setStatus('Rive Web runtime 無法啟動，請檢查網路後重新整理。', 'error');
     }
   </script>
 </body>
