@@ -7,8 +7,8 @@
   <style>
     * { box-sizing: border-box; }
     html, body { width: 100%; height: 100%; margin: 0; overflow: hidden; }
-    body { background: #121212; font-family: ui-sans-serif, system-ui, sans-serif; }
-    canvas { display: block; width: 100vw; height: 100svh; touch-action: none; cursor: grab; }
+    body { display: grid; place-items: center; background: #121212; font-family: ui-sans-serif, system-ui, sans-serif; }
+    canvas { display: block; width: min(100vw, 100svh); height: min(100vw, 100svh); touch-action: none; cursor: grab; }
     canvas:active { cursor: grabbing; }
     .back { position: fixed; z-index: 2; top: max(16px, env(safe-area-inset-top)); left: max(16px, env(safe-area-inset-left)); padding: 10px 15px; border: 1px solid #ffffff32; border-radius: 999px; background: #0009; color: #fff; text-decoration: none; font-size: 14px; backdrop-filter: blur(10px); }
     .back:hover, .back:focus-visible { background: #000c; outline: 2px solid #fff; outline-offset: 2px; }
