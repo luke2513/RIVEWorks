@@ -33,7 +33,7 @@
         src: './puppy_and_annoying_fly.riv', canvas, artboard: 'Doggie follow',
         stateMachines: 'State Machine 1', autoplay: true, autoBind: true,
         isTouchScrollEnabled: false, dispatchPointerExit: true,
-        layout: new rive.Layout({ fit: rive.Fit.Cover, alignment: rive.Alignment.Center }),
+        layout: new rive.Layout({ fit: rive.Fit.Contain, alignment: rive.Alignment.Center }),
         onLoad: () => { resize(); instance.setupRiveListeners({ isTouchScrollEnabled: false }); setStatus('互動已就緒：移動、按下並拖曳。', 'ok'); },
         onLoadError: error => { console.error(error); setStatus('載入失敗，請確認 Rive 檔案位於同一層。', 'error'); }
       });
