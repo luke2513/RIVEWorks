@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Puppy and Annoying Fly — Rive Demo</title>
+  <style>
+    :root { color-scheme: dark; font-family: ui-sans-serif, system-ui, sans-serif; }
+    * { box-sizing: border-box; }
+    body { margin: 0; min-height: 100svh; display: grid; place-items: center; background: #121212; color: #f7f7f2; }
+    main { width: min(100%, 960px); padding: 20px; }
+    .stage { position: relative; width: 100%; aspect-ratio: 16 / 10; overflow: hidden; border-radius: 24px; background: #ece6d9; box-shadow: 0 20px 70px #0008; }
+    canvas { display: block; width: 100%; height: 100%; touch-action: none; cursor: grab; }
+    canvas:active { cursor: grabbing; }
+    .status { margin: 12px 4px 0; color: #aaa; font-size: 13px; }
+    .status[data-state="ok"] { color: #87d99b; }
+    .status[data-state="error"] { color: #ff8f8f; }
+  </style>
+</head>
+<body>
+  <main>
+    <div class="stage">
+      <canvas id="rive-canvas" aria-label="Interactive puppy and fly animation"></canvas>
+    </div>
+    <p id="status" class="status">正在載入互動作品…</p>
+  </main>
+
+  <!-- Rive Web Canvas runtime. No build step is needed for GitHub Pages. -->
+  <script src="https://unpkg.com/@rive-app/canvas"></script>
+  <script>
+    const FILE = './puppy_and_annoying_fly.riv';
+    const ARTBOARD = 'Doggie follow';
+    const STATE_MACHINE = 'State Machine 1';
+
+    const canvas = document.querySelector('#rive-canvas');
+    const status = document.querySelector('#status');
+    let riveInstance;
+
+    function setStatus(message, state = '') {
+      status.textContent = message;
+      status.dataset.state = state;
+    }
+
+    function resize() {
+      riveInstance?.resizeDrawingSurfaceToCanvas();
+    }
+
+    try {
+      riveInstance = new rive.Rive({
+        src: FILE,
+        canvas,
+        artboard: ARTBOARD,
+        stateMachines: STATE_MACHINE,
+        autoplay: true,
+        autoBind: true,
+        isTouchScrollEnabled: false,
+        dispatchPointerExit: true,
+        layout: new rive.Layout({
+          fit: rive.Fit.Contain,
+          alignment: rive.Alignment.Center,
+        }),
+        onLoad: () => {
+          resize();
+          riveInstance.setupRiveListeners({ isTouchScrollEnabled: false });
+          setStatus('互動已就緒：移動、按下並拖曳滑鼠（觸控裝置可直接拖曳）。', 'ok');
+        },
+        onLoadError: (error) => {
+          console.error('Rive load error:', error);
+          setStatus('載入失敗。請確認網頁是由伺服器開啟，且 .riv 檔與 index.html 位於同一層。', 'error');
+        },
+      });
+
+      const observer = new ResizeObserver(resize);
+      observer.observe(canvas.parentElement);
+      window.addEventListener('beforeunload', () => {
+        observer.disconnect();
+        riveInstance?.cleanup();
+      });
+    } catch (error) {
+      console.error(error);
+      setStatus('Rive Web runtime 無法啟動，請檢查網路連線後重新整理。', 'error');
+    }
+  </script>
+</body>
+</html>
